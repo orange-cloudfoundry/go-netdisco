@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -18,6 +19,8 @@ type Client struct {
 	endpoint      string
 	httpClient    *http.Client
 	authTransport *AuthTransport
+	mutexLogin    sync.Mutex
+	lastLogin     time.Time
 }
 
 func NewClient(endpoint, username, password string, insecureSkipVerify bool) *Client {
@@ -38,6 +41,12 @@ func NewClient(endpoint, username, password string, insecureSkipVerify bool) *Cl
 }
 
 func (c *Client) Login() error {
+	c.mutexLogin.Lock()
+	defer c.mutexLogin.Unlock()
+	// if last login below 3600 we already login
+	if !c.lastLogin.IsZero() && time.Now().Sub(c.lastLogin) < (time.Second*3600) {
+		return nil
+	}
 	req, err := c.NewRequest(http.MethodPost, "/login", nil)
 	if err != nil {
 		return err
@@ -46,6 +55,7 @@ func (c *Client) Login() error {
 	apiKeyStruct := struct {
 		ApiKey string `json:"api_key"`
 	}{}
+	c.lastLogin = time.Now()
 	err = c.DoWithRetry(req, &apiKeyStruct)
 	if err != nil {
 		return err
