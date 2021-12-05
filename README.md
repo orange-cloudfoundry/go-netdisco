@@ -30,3 +30,16 @@ func main() {
 	fmt.Println(devices)
 }
 ```
+
+**Important**:
+For now user/password login produce an `api key`, a user can't have multiple on netdisco which can block usage with the
+same login on multiple clients which are not aware of the api key.
+
+Until netdisco allow multiple api key you can:
+
+1. set `api_token_lifetime: 1576800000` in netdisco configuration, this will set expiration time to 50 years for a token
+2. Produce an api key on https://my.netdisco.com/swagger-ui
+3. use in this lib `netdisco.NewClientWithApiKey("https://netdisco2-demo.herokuapp.com", "api key", false)` everywhere
+   you need it
+
+This is a weak solution as at any login or logout made on api, will make api key change.

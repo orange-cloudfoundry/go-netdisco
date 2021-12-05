@@ -24,7 +24,15 @@ type Client struct {
 }
 
 func NewClient(endpoint, username, password string, insecureSkipVerify bool) *Client {
-	authTransport := NewTransport("", insecureSkipVerify)
+	return makeClient(endpoint, username, password, "", insecureSkipVerify)
+}
+
+func NewClientWithApiKey(endpoint, apiKey string, insecureSkipVerify bool) *Client {
+	return makeClient(endpoint, "", "", apiKey, insecureSkipVerify)
+}
+
+func makeClient(endpoint, username, password string, apiKey string, insecureSkipVerify bool) *Client {
+	authTransport := NewTransport(apiKey, insecureSkipVerify)
 	return &Client{
 		username:      username,
 		password:      password,
@@ -41,6 +49,9 @@ func NewClient(endpoint, username, password string, insecureSkipVerify bool) *Cl
 }
 
 func (c *Client) Login() error {
+	if c.username == "" {
+		return fmt.Errorf("Could not login as there is no user, please update api key")
+	}
 	c.mutexLogin.Lock()
 	defer c.mutexLogin.Unlock()
 	// if last login below 3600 we already login
@@ -142,13 +153,4 @@ func (c *Client) UnmarshalResponse(resp *http.Response, value interface{}, valid
 		return fmt.Errorf("error during decode response: %s", err.Error())
 	}
 	return nil
-}
-
-func (c *Client) SearchDevice(query *SearchDeviceQuery) ([]Device, error) {
-	devices := make([]Device, 0)
-	err := c.Do(http.MethodGet, "/api/v1/search/device?"+query.Serialize().Encode(), nil, &devices)
-	if err != nil {
-		return nil, err
-	}
-	return devices, nil
 }
