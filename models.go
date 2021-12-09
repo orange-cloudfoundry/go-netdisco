@@ -8,50 +8,70 @@ import (
 
 const SeparatorByte byte = 255
 
-
-
-
-
-
 var separatorByteSlice = []byte{SeparatorByte}
 
 type Device struct {
-	UptimeAge         string  `json:"uptime_age"`
+	Log               string  `json:"log"`
 	Location          string  `json:"location"`
-	SinceLastArpnip   float64 `json:"since_last_arpnip"`
-	FirstSeenStamp    string  `json:"first_seen_stamp"`
-	OsVer             string  `json:"os_ver"`
-	Name              string  `json:"name"`
-	LastArpnipStamp   string  `json:"last_arpnip_stamp"`
+	LastMacsuckStamp  string  `json:"last_macsuck_stamp"`
+	Ps2Type           string  `json:"ps2_type"`
+	SnmpVer           int     `json:"snmp_ver"`
+	LastArpnip        string  `json:"last_arpnip"`
+	Creation          string  `json:"creation"`
+	SnmpClass         string  `json:"snmp_class"`
+	Ps1Type           string  `json:"ps1_type"`
+	Contact           string  `json:"contact"`
+	SnmpEngineid      string  `json:"snmp_engineid"`
 	Model             string  `json:"model"`
 	SinceFirstSeen    float64 `json:"since_first_seen"`
+	SnmpComm          string  `json:"snmp_comm"`
+	Name              string  `json:"name"`
+	Slots             int     `json:"slots"`
 	IP                string  `json:"ip"`
-	Serial            string  `json:"serial"`
 	SinceLastMacsuck  float64 `json:"since_last_macsuck"`
+	Os                string  `json:"os"`
+	LastDiscover      string  `json:"last_discover"`
+	Layers            string  `json:"layers"`
 	DNS               string  `json:"dns"`
-	SinceLastDiscover float64 `json:"since_last_discover"`
-	LastMacsuckStamp  string  `json:"last_macsuck_stamp"`
+	VtpDomain         string  `json:"vtp_domain"`
+	UptimeAge         string  `json:"uptime_age"`
+	Mac               string  `json:"mac"`
 	LastDiscoverStamp string  `json:"last_discover_stamp"`
+	Uptime            int64   `json:"uptime"`
+	Description       string  `json:"description"`
+	ChassisID         string  `json:"chassis_id"`
+	FirstSeenStamp    string  `json:"first_seen_stamp"`
+	Fan               string  `json:"fan"`
+	Ps1Status         string  `json:"ps1_status"`
+	LastArpnipStamp   string  `json:"last_arpnip_stamp"`
+	Vendor            string  `json:"vendor"`
+	LastMacsuck       string  `json:"last_macsuck"`
+	Ps2Status         string  `json:"ps2_status"`
+	SinceLastArpnip   float64 `json:"since_last_arpnip"`
+	SinceLastDiscover float64 `json:"since_last_discover"`
+	OsVer             string  `json:"os_ver"`
+	NumPorts          int     `json:"num_ports"`
+	Serial            string  `json:"serial"`
+	IsPseudo          int     `json:"is_pseudo"`
 
-	Contact string `json:"contact"`
-	Alias   string `json:"alias"`
-	Vendor  string `json:"vendor"`
+	Alias string `json:"alias"`
 }
 
 type SearchDeviceQuery struct {
-	Q           string `json:"q" yaml:"q"`
-	Name        string `json:"name" yaml:"name"`
-	Location    string `json:"location" yaml:"location"`
-	DNS         string `json:"dns" yaml:"dns"`
-	Ip          string `json:"ip" yaml:"ip"`
-	Description string `json:"description" yaml:"description"`
-	Mac         string `json:"mac" yaml:"mac"`
-	Model       string `json:"model" yaml:"model"`
-	OS          string `json:"os" yaml:"os"`
-	OSVer       string `json:"os_ver" yaml:"os_ver"`
-	Vendor      string `json:"vendor" yaml:"vendor"`
-	Layers      string `json:"layers" yaml:"layers"`
-	Matchall    bool   `json:"matchall" yaml:"matchall"`
+	Q             string `json:"q" yaml:"q"`
+	Name          string `json:"name" yaml:"name"`
+	Location      string `json:"location" yaml:"location"`
+	DNS           string `json:"dns" yaml:"dns"`
+	Ip            string `json:"ip" yaml:"ip"`
+	Description   string `json:"description" yaml:"description"`
+	Mac           string `json:"mac" yaml:"mac"`
+	Model         string `json:"model" yaml:"model"`
+	OS            string `json:"os" yaml:"os"`
+	OSVer         string `json:"os_ver" yaml:"os_ver"`
+	Vendor        string `json:"vendor" yaml:"vendor"`
+	Layers        string `json:"layers" yaml:"layers"`
+	Matchall      bool   `json:"matchall" yaml:"matchall"`
+	SeeAllColumns bool   `json:"seeallcolumns" yaml:"seeallcolumns"`
 
 	queryId uint64 `json:"-" yaml:"-"`
 }
@@ -99,6 +119,11 @@ func (q *SearchDeviceQuery) Serialize() url.Values {
 		values["matchall"] = []string{"true"}
 	} else {
 		values["matchall"] = []string{"false"}
+	}
+	if q.SeeAllColumns {
+		values["seeallcolumns"] = []string{"true"}
+	} else {
+		values["seeallcolumns"] = []string{"false"}
 	}
 	return values
 }
