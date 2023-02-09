@@ -1,58 +1,84 @@
 package netdisco
 
 import (
-	"net/url"
-
+	"encoding/json"
 	"github.com/cespare/xxhash/v2"
+	"net/url"
+	"strconv"
 )
 
 const SeparatorByte byte = 255
 
 var separatorByteSlice = []byte{SeparatorByte}
 
+type Float64String float64
+
+func (f *Float64String) UnmarshalJSON(b []byte) error {
+	var result float64
+	if err := json.Unmarshal(b, &result); err == nil {
+		*f = Float64String(result)
+		return nil
+	}
+	var resultString string
+	if err := json.Unmarshal(b, &resultString); err != nil {
+		return err
+	}
+	fVal, err := strconv.ParseFloat(resultString, 64)
+	if err != nil {
+		*f = Float64String(0)
+		return nil
+	}
+	*f = Float64String(fVal)
+	return nil
+}
+
+func (f Float64String) MarshalJSON() ([]byte, error) {
+	return json.Marshal(float64(f))
+}
+
 type Device struct {
-	Log               string  `json:"log"`
-	Location          string  `json:"location"`
-	LastMacsuckStamp  string  `json:"last_macsuck_stamp"`
-	Ps2Type           string  `json:"ps2_type"`
-	SnmpVer           int     `json:"snmp_ver"`
-	LastArpnip        string  `json:"last_arpnip"`
-	Creation          string  `json:"creation"`
-	SnmpClass         string  `json:"snmp_class"`
-	Ps1Type           string  `json:"ps1_type"`
-	Contact           string  `json:"contact"`
-	SnmpEngineid      string  `json:"snmp_engineid"`
-	Model             string  `json:"model"`
-	SinceFirstSeen    float64 `json:"since_first_seen"`
-	SnmpComm          string  `json:"snmp_comm"`
-	Name              string  `json:"name"`
-	Slots             int     `json:"slots"`
-	IP                string  `json:"ip"`
-	SinceLastMacsuck  float64 `json:"since_last_macsuck"`
-	Os                string  `json:"os"`
-	LastDiscover      string  `json:"last_discover"`
-	Layers            string  `json:"layers"`
-	DNS               string  `json:"dns"`
-	VtpDomain         string  `json:"vtp_domain"`
-	UptimeAge         string  `json:"uptime_age"`
-	Mac               string  `json:"mac"`
-	LastDiscoverStamp string  `json:"last_discover_stamp"`
-	Uptime            int64   `json:"uptime"`
-	Description       string  `json:"description"`
-	ChassisID         string  `json:"chassis_id"`
-	FirstSeenStamp    string  `json:"first_seen_stamp"`
-	Fan               string  `json:"fan"`
-	Ps1Status         string  `json:"ps1_status"`
-	LastArpnipStamp   string  `json:"last_arpnip_stamp"`
-	Vendor            string  `json:"vendor"`
-	LastMacsuck       string  `json:"last_macsuck"`
-	Ps2Status         string  `json:"ps2_status"`
-	SinceLastArpnip   float64 `json:"since_last_arpnip"`
-	SinceLastDiscover float64 `json:"since_last_discover"`
-	OsVer             string  `json:"os_ver"`
-	NumPorts          int     `json:"num_ports"`
-	Serial            string  `json:"serial"`
-	IsPseudo          int     `json:"is_pseudo"`
+	Log               string        `json:"log"`
+	Location          string        `json:"location"`
+	LastMacsuckStamp  string        `json:"last_macsuck_stamp"`
+	Ps2Type           string        `json:"ps2_type"`
+	SnmpVer           int           `json:"snmp_ver"`
+	LastArpnip        string        `json:"last_arpnip"`
+	Creation          string        `json:"creation"`
+	SnmpClass         string        `json:"snmp_class"`
+	Ps1Type           string        `json:"ps1_type"`
+	Contact           string        `json:"contact"`
+	SnmpEngineid      string        `json:"snmp_engineid"`
+	Model             string        `json:"model"`
+	SinceFirstSeen    Float64String `json:"since_first_seen"`
+	SnmpComm          string        `json:"snmp_comm"`
+	Name              string        `json:"name"`
+	Slots             int           `json:"slots"`
+	IP                string        `json:"ip"`
+	SinceLastMacsuck  Float64String `json:"since_last_macsuck"`
+	Os                string        `json:"os"`
+	LastDiscover      string        `json:"last_discover"`
+	Layers            string        `json:"layers"`
+	DNS               string        `json:"dns"`
+	VtpDomain         string        `json:"vtp_domain"`
+	UptimeAge         string        `json:"uptime_age"`
+	Mac               string        `json:"mac"`
+	LastDiscoverStamp string        `json:"last_discover_stamp"`
+	Uptime            int64         `json:"uptime"`
+	Description       string        `json:"description"`
+	ChassisID         string        `json:"chassis_id"`
+	FirstSeenStamp    string        `json:"first_seen_stamp"`
+	Fan               string        `json:"fan"`
+	Ps1Status         string        `json:"ps1_status"`
+	LastArpnipStamp   string        `json:"last_arpnip_stamp"`
+	Vendor            string        `json:"vendor"`
+	LastMacsuck       string        `json:"last_macsuck"`
+	Ps2Status         string        `json:"ps2_status"`
+	SinceLastArpnip   Float64String `json:"since_last_arpnip"`
+	SinceLastDiscover Float64String `json:"since_last_discover"`
+	OsVer             string        `json:"os_ver"`
+	NumPorts          int           `json:"num_ports"`
+	Serial            string        `json:"serial"`
+	IsPseudo          int           `json:"is_pseudo"`
 
 	Alias string `json:"alias"`
 }
